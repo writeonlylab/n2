@@ -76,7 +76,7 @@ function __n2_short_hostname {
         local node_name="$(uname -n)"
         __n2_inline_echo "${node_name%%.*}"
     else
-        __n2_inline_echo "$N2_PS1_HOSTNAME"
+        __n2_inline_echo "${N2_PS1_HOSTNAME:-}"
     fi
 }
 

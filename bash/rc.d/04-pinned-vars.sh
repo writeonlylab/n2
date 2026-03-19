@@ -19,7 +19,7 @@ function n2_update_pinned {
         return
     fi
 
-    local hook="n2_hook_label_$N2_PS1_LABEL"
-    [ "$(type -t "$hook")" = function ] && "$hook" "${N2_PS1_LABEL}"
+    local hook="n2_hook_label_${N2_PS1_LABEL:-}"
+    [ "$(type -t "$hook")" = function ] && "$hook" "${N2_PS1_LABEL:-}"
 }
 

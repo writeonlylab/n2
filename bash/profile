@@ -21,6 +21,13 @@ __n2_get_m2_root() {
             ret="$ret:$p"
         fi
     done
+    if [ -n "${N2_EXTRA_M2_DIRS:-}" ]; then
+        if [ -z "$ret" ]; then
+            ret="$N2_EXTRA_M2_DIRS"
+        else
+            ret="$ret:$N2_EXTRA_M2_DIRS"
+        fi
+    fi
     echo "$ret"
 }
 
