@@ -66,43 +66,6 @@ command provides M2 directory management.  See
 .BR m2 (7)
 for details.
 
-.SH INSTALLATION
-
-Clone the repository and run the installer:
-
-.EX
-    cd "$HOME"
-    git clone git@github.com:hengyang\-zhao/n2.git .n2
-    .n2/install.sh
-.EE
-
-The installer appends entrance snippets to existing dot-files
-.RB ( ~/.bashrc ,
-.BR ~/.bash_profile ,
-.BR ~/.vimrc ,
-.BR ~/.tmux.conf ,
-.BR ~/.gitconfig ).
-It does not overwrite, backup, or soft-link your original files.
-
-The cloned directory can be named and placed arbitrarily.  M2 directories,
-however, must follow the naming convention (see
-.BR "M2 DIRECTORY" ).
-
-.SS Environment Variables for install.sh
-.TP
-.B AUTO_CONFIRM=yes
-Automatically confirms all installation prompts.
-.TP
-.B PLAYGROUND=yes
-Installs to a temporary directory instead of
-.BR $HOME .
-
-.SS Uninstallation
-Run
-.B uninstall.sh
-to display the list of modified files.  The entrance blocks must be removed
-manually from each file.
-
 .SH M2 DIRECTORY
 
 Project N2 allows customization by discovering M2 directories and picking up
@@ -368,18 +331,6 @@ Works on Linux, Darwin, and FreeBSD.
 .B github\-token\-quota \fItoken\fR
 Queries the GitHub API rate limit for the given personal access token.
 
-.SH INTERNAL FUNCTIONS
-
-.TP
-.B __n2_color_table
-Prints a color table showing all 256-color terminal colors using the N2
-color functions
-.BR __n2_gray " and " __n2_rgb .
-
-.TP
-.B __n2_has \fIcommand ...\fR
-Returns true if all given commands are available in the PATH.
-
 .SH FEATURE VARIABLES
 
 These variables can be set in M2 rc or profile scripts to control N2
@@ -594,84 +545,6 @@ The helper function
 .B n2_define_pinned
 .I VAR_NAME VAR_VALUE
 can be used to define bash variables to be printed along with the PS1.
-
-.SH GIT CONFIGURATION
-
-N2 provides a base git config with the following:
-
-.RS
-.IP \(bu 2
-.B color.ui = auto
-.IP \(bu
-.B core.editor = vim
-.IP \(bu
-Aliases:
-.BR b " (branch),"
-.BR br " (branch \-a \-vv),"
-.BR co " (checkout),"
-.BR cb " (checkout \-b),"
-.BR s " (status \-s),"
-.BR re " (remote \-v),"
-.BR cl " (clone \-\-recursive),"
-.BR h " (pretty log graph),"
-.BR hi " (detailed log graph with stats),"
-.BR wdiff " (word diff),"
-.BR vimdiff " (difftool with vimdiff)"
-.RE
-
-M2 git configs are linked into the N2 volatile directory and included
-automatically.  Up to 4 M2 git configs are supported.  Re-linking is done on
-each bash startup via
-.BR "n2 link\-gitconfigs" .
-
-.SH VIM CONFIGURATION
-
-N2 enables vim modelines
-.RB ( "set modelines=5" )
-and sources all
-.B *.vim
-files from M2 vim directories in ASCII order.
-
-.SH BASH CONFIGURATION
-
-N2 sets the following bash defaults:
-
-.RS
-.IP \(bu 2
-.B HISTCONTROL=ignoreboth
-.IP \(bu
-.B HISTSIZE=999999
-.IP \(bu
-.B HISTFILESIZE=999999
-.IP \(bu
-.B HISTTIMEFORMAT="%Y\-%m\-%d %T\ \ "
-.IP \(bu
-.BR "shopt \-s checkwinsize" " and " "shopt \-s histappend"
-.IP \(bu
-.BR "stty \-ixon" " (disables XON/XOFF flow control)"
-.IP \(bu
-Sets
-.B EDITOR
-to
-.B vim
-(or
-.BR vi )
-if available
-.RE
-
-.SH FILES
-
-.TP
-.B ~/.n2/
-Default N2 installation directory.
-
-.TP
-.B ~/.m2*/
-M2 customization directories.
-
-.TP
-.B ~/.n2/volatile/
-Runtime files (git config links, installation records).  Not version-controlled.
 
 .SH SEE ALSO
 .BR m2 (7),

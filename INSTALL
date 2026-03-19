@@ -1,0 +1,46 @@
+INSTALL - Project N2
+====================
+
+Prerequisites
+-------------
+
+  - bash 4.x or later
+  - git
+
+Installation
+------------
+
+Clone the repository and run the installer:
+
+    cd "$HOME"
+    git clone git@github.com:hengyang-zhao/n2.git .n2
+    .n2/install.sh
+
+The installer appends entrance snippets to existing dot-files (~/.bashrc,
+~/.bash_profile, ~/.vimrc, ~/.tmux.conf, ~/.gitconfig).  It does not
+overwrite, backup, or soft-link your original files.
+
+The cloned directory can be named and placed arbitrarily.  M2 directories,
+however, must follow the naming convention documented in n2(7).
+
+Environment Variables
+---------------------
+
+  AUTO_CONFIRM=yes    Automatically confirms all installation prompts.
+  PLAYGROUND=yes      Installs to a temporary directory instead of $HOME.
+
+Example:
+
+    AUTO_CONFIRM=yes .n2/install.sh
+
+Uninstallation
+--------------
+
+Run uninstall.sh to see the list of modified files:
+
+    .n2/uninstall.sh
+
+Then manually edit each listed file to remove the code blocks between
+the "=== N2 ENTRANCE BEGIN ===" and "=== N2 ENTRANCE END ===" markers.
+
+After removing those blocks, you may delete the N2 directory itself.
