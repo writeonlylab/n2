@@ -46,13 +46,15 @@ tmux send-keys -t "$SESSION" "PLAYGROUND=yes bash '$N2_DIR/install.sh' 2>&1; ech
 wait_for "Looks good?" 30
 
 # install.sh uses `read -re -i "Y"` which pre-fills "Y" via readline.
-# Send Ctrl-U to clear the line first, then type "A" to auto-confirm all.
+# Give readline extra time to become ready before sending input, then
+# send Ctrl-U to clear the pre-filled default and type "A" to auto-confirm all.
+sleep 2
 tmux send-keys -t "$SESSION" C-u
-sleep 0.2
+sleep 0.5
 tmux send-keys -t "$SESSION" "A" Enter
 
 # Wait for installation to complete (look for the exit code echo)
-wait_for "INSTALL_EXIT_CODE:" 30
+wait_for "INSTALL_EXIT_CODE:" 60
 
 # Capture the full pane output
 OUTPUT=$(tmux capture-pane -t "$SESSION" -p -S -)

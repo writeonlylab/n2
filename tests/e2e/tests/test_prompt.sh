@@ -59,7 +59,7 @@ tmux new-session -d -s "$SESSION" -x 220 -y 50
 tmux send-keys -t "$SESSION" "N2_TEST_READY=1 HOME='$PLAYGROUND_DIR' bash --login" Enter
 
 CURRENT_USER=$(whoami)
-CURRENT_HOST=$(hostname -s 2>/dev/null || hostname)
+CURRENT_HOST=$(hostname -s 2>/dev/null || hostname 2>/dev/null || cat /etc/hostname 2>/dev/null | tr -d '[:space:]')
 
 # Wait for the n2 prompt to render — n2's PS1 includes color codes,
 # so wait for the second occurrence of user@host (first is the parent shell)
@@ -97,7 +97,8 @@ else
 fi
 
 # 4. Shell prompt indicator ($ for normal user, # for root)
-if echo "$OUTPUT" | grep -qE '[$#] *$'; then
+# n2 prompt is multi-line — the terminator appears at the START of a line.
+if echo "$OUTPUT" | grep -qE '^[$#] '; then
     pass "Prompt terminator (\$ or #) present"
 else
     fail "Prompt terminator not found at end of line"
