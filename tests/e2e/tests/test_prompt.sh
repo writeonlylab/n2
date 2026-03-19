@@ -59,7 +59,9 @@ tmux new-session -d -s "$SESSION" -x 220 -y 50
 tmux send-keys -t "$SESSION" "N2_TEST_READY=1 HOME='$PLAYGROUND_DIR' bash --login" Enter
 
 CURRENT_USER=$(whoami)
-CURRENT_HOST=$(hostname -s 2>/dev/null || hostname 2>/dev/null || cat /etc/hostname 2>/dev/null | tr -d '[:space:]')
+# hostname may not be installed (e.g. minimal Fedora container)
+CURRENT_HOST=""
+CURRENT_HOST=$(hostname -s 2>/dev/null) || CURRENT_HOST=$(cat /etc/hostname 2>/dev/null | tr -d '[:space:]') || CURRENT_HOST="unknown"
 
 # Wait for the n2 prompt to render — n2's PS1 includes color codes,
 # so wait for the second occurrence of user@host (first is the parent shell)
