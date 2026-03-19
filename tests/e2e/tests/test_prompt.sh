@@ -55,12 +55,18 @@ echo "Playground dir: $PLAYGROUND_DIR"
 tmux new-session -d -s "$SESSION" -x 220 -y 50
 
 # Open a bash login shell using the playground home directory
-tmux send-keys -t "$SESSION" "HOME='$PLAYGROUND_DIR' bash --login" Enter
+# First, set a unique env var so we can detect when the n2 shell is ready
+tmux send-keys -t "$SESSION" "N2_TEST_READY=1 HOME='$PLAYGROUND_DIR' bash --login" Enter
 
-# Wait for the prompt to render (user@host pattern)
 CURRENT_USER=$(whoami)
 CURRENT_HOST=$(hostname -s 2>/dev/null || hostname)
-wait_for "${CURRENT_USER}@${CURRENT_HOST}" 15
+
+# Wait for the n2 prompt to render — n2's PS1 includes color codes,
+# so wait for the second occurrence of user@host (first is the parent shell)
+sleep 5
+# Also try running a marker command to confirm the shell is interactive
+tmux send-keys -t "$SESSION" "echo N2_SHELL_READY" Enter
+wait_for "N2_SHELL_READY" 15
 
 # Capture the pane (include scrollback)
 OUTPUT=$(tmux capture-pane -t "$SESSION" -p -S -)
