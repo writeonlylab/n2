@@ -11,17 +11,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 N2_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 PLATFORMS=(debian fedora)
-TESTS=(test_install test_prompt)
+TESTS=(test_install test_prompt test_uninstall)
 PASS_TOTAL=0
 FAIL_TOTAL=0
 RESULTS=()
 
 usage() {
-    echo "Usage: $0 [--platform debian|fedora] [--test install|prompt]"
+    echo "Usage: $0 [--platform debian|fedora] [--test install|prompt|uninstall]"
     echo ""
     echo "Options:"
     echo "  --platform, -p    Platform to test (can be repeated). Default: all"
-    echo "  --test, -t        Test to run (can be repeated). Default: all"
+    echo "  --test, -t        Test to run (install|prompt|uninstall, can be repeated). Default: all"
     echo "  --help, -h        Show this help"
     exit 0
 }
