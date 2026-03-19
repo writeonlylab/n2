@@ -1,9 +1,206 @@
-.TH N2 7 "2021-2022" "Project N2" "User Command"
+.TH M2 7 "March 2026" "Project N2" "User Command"
 
 .SH NAME
 .B m2
+\- Manage M2 customization directories for Project N2
 
-TO BE ADDED. Please see
-.B man n2
-for more details.
+.SH SYNOPSIS
+.B m2
+.I subcommand
 
+.SH DESCRIPTION
+Command
+.B m2
+provides management for M2 directories, which are the user customization
+layer of Project N2.  M2 directories hold personal configurations for bash,
+vim, tmux, git, and custom executables.
+
+.SH SUBCOMMANDS
+
+.TP
+.B create
+Creates a demo M2 directory at
+.BR ~/.m2\-00\-demo .
+The demo directory contains example configurations for all supported tools
+and is a good starting point for customization.  If the directory already
+exists, the command exits with an error.
+
+.TP
+.B list
+Lists all M2 directories found under
+.BR $HOME .
+Directories are listed in lexical order (the same order they are loaded).
+
+.TP
+.B help
+Shows this man page.  Same as
+.BR "man m2" .
+
+.P
+Tab completion is available for all
+.B m2
+subcommands.
+
+.SH M2 DIRECTORY STRUCTURE
+
+An M2 directory is any directory directly under
+.B $HOME
+whose name starts with
+.BR .m2 .
+M2 directories are discovered and loaded in lexical order, so later
+directories can override earlier ones.
+
+.SS Naming Convention
+
+.EX
+    ~/.m2                   (simplest form)
+    ~/.m2\-10\-personal      (numbered for ordering)
+    ~/.m2\-20\-work          (loaded after personal)
+.EE
+
+The infixes
+.B \-10\-
+and
+.B \-20\-
+control the loading order.
+
+.SS Directory Layout
+
+A typical M2 directory has the following structure:
+
+.EX
+    ~/.m2/
+    +-- bash/
+    |   +-- profile.d/
+    |   |   +-- 00\-paths.sh
+    |   +-- rc.d/
+    |       +-- 00\-features.sh
+    +-- exec/
+    |   +-- my\-command
+    +-- git/
+    |   +-- config
+    +-- tmux/
+    |   +-- conf
+    +-- vim/
+        +-- 00\-colorscheme.vim
+.EE
+
+.SS Bash Profile Scripts
+.B bash/profile.d/*.sh
+
+Sourced once during login.  Use for PATH modifications, environment variable
+exports, and other non-idempotent configurations.  Files are sourced in
+ASCII order.
+
+.SS Bash RC Scripts
+.B bash/rc.d/*.sh
+
+Sourced each time an interactive shell starts (including
+.BR "source ~/.bashrc" ).
+Use for aliases, functions, shell options, and other idempotent
+configurations.  Files are sourced in ASCII order.
+
+Do not modify
+.B PATH
+here; use
+.B profile.d
+instead to avoid repeated prepending.
+
+.SS Executables
+.B exec/
+
+This directory is automatically added to
+.BR PATH .
+Place custom scripts and executables here.
+
+.SS Git Config
+.B git/config
+
+Included into the global git configuration via
+.BR git\-config (1)
+include directives.  N2 supports up to 4 M2 git configs.  They are
+re-linked on each bash startup.
+
+.SS Tmux Config
+.B tmux/conf
+
+Sourced by tmux after the N2 base configuration.  All files in the
+.B tmux/
+directory are sourced.
+
+.SS Vim Config
+.B vim/*.vim
+
+Vim configuration files, sourced in ASCII order after the N2 base vim
+configuration.
+
+.SH DEMO M2
+
+The
+.B m2 create
+command generates a demo M2 directory at
+.B ~/.m2\-00\-demo
+with the following example files:
+
+.TP
+.B bash/rc.d/00\-features.sh
+Commented-out feature variable examples (status line, command expansion,
+thick separator, auto-attach tmux, hostname override, etc.).
+
+.TP
+.B bash/rc.d/01\-formats.sh
+Commented-out style variable overrides for PS1 elements.
+
+.TP
+.B bash/rc.d/03\-hooks.sh
+Commented-out hook examples
+.RB ( n2_hook_postcd ", " n2_hook_ps1_cwd ", " n2_hook_label_* ).
+
+.TP
+.B bash/rc.d/10\-tmux.sh
+A commented-out tmux shortcut alias
+.B t
+for quickly creating and attaching sessions.
+
+.TP
+.B bash/profile.d/00\-paths.sh
+An example PATH extension script.
+
+.TP
+.B exec/m2\-hello
+A sample executable demonstrating the exec directory feature.
+
+.TP
+.B git/config
+A sample git config with push and user settings.
+
+.TP
+.B tmux/conf
+Commented-out tmux configuration examples.
+
+.TP
+.B vim/00\-colorscheme.vim
+A commented-out colorscheme example.
+
+.TP
+.B vim/01\-gitcommit.vim
+A commented-out git commit editing configuration.
+
+.SH VERSION CONTROL
+
+It is recommended to version-control M2 directories with git.  The
+.B n2 update
+and
+.B n2 status
+commands operate on all discovered M2 directories.
+
+.SH SEE ALSO
+.BR n2 (7),
+.BR bash (1),
+.BR tmux (1),
+.BR vim (1),
+.BR git (1),
+.BR git\-config (1)
+
+.SH AUTHOR
+Hengyang Zhao <hzhao877502@gmail.com>
