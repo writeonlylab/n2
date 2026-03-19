@@ -97,11 +97,12 @@ else
 fi
 
 # 4. Shell prompt indicator ($ for normal user, # for root)
-# n2 prompt is multi-line — the terminator appears at the START of a line.
-if echo "$OUTPUT" | grep -qE '^[$#] '; then
+# n2 prompt is multi-line — the terminator line contains $ or # possibly
+# preceded by ANSI escape codes or label text.
+if echo "$OUTPUT" | grep -qE '[$#] '; then
     pass "Prompt terminator (\$ or #) present"
 else
-    fail "Prompt terminator not found at end of line"
+    fail "Prompt terminator not found"
 fi
 
 # 5. A working directory path appears (at minimum '/')

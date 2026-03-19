@@ -40,7 +40,7 @@ wait_for() {
 tmux new-session -d -s "$SESSION" -x 220 -y 50
 
 # Launch install.sh in PLAYGROUND mode (interactive — no AUTO_CONFIRM)
-tmux send-keys -t "$SESSION" "PLAYGROUND=yes bash '$N2_DIR/install.sh' 2>&1; echo 'INSTALL_EXIT_CODE:'$?" Enter
+tmux send-keys -t "$SESSION" "PLAYGROUND=yes bash '${N2_DIR}/install.sh'" Enter
 
 # Wait for the first confirmation prompt to actually appear
 wait_for "Looks good?" 30
@@ -53,8 +53,9 @@ tmux send-keys -t "$SESSION" C-u
 sleep 0.5
 tmux send-keys -t "$SESSION" "A" Enter
 
-# Wait for installation to complete (look for the exit code echo)
-wait_for "INSTALL_EXIT_CODE:" 60
+# Wait for the install completion banner (not the marker in the typed command).
+# "N2 installation complete" appears at the very end of install.sh output.
+wait_for "N2 installation complete" 60
 
 # Capture the full pane output
 OUTPUT=$(tmux capture-pane -t "$SESSION" -p -S -)
