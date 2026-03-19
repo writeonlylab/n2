@@ -109,7 +109,6 @@ is_installed() {
 }
 
 mark_installed() {
-    [ "$PLAYGROUND" = yes ] && return 0
     local path
     path="$1"
     echo "$path" >> "$INSTALLED_FILES"
