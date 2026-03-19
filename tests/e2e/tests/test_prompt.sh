@@ -21,6 +21,22 @@ trap cleanup EXIT
 
 echo "=== test_prompt.sh ==="
 
+# Helper: wait for a string to appear in the tmux pane
+wait_for() {
+    local pattern=$1
+    local timeout=${2:-30}
+    local elapsed=0
+    while [ $elapsed -lt $timeout ]; do
+        if tmux capture-pane -t "$SESSION" -p -S - | grep -qE "$pattern"; then
+            return 0
+        fi
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    echo "TIMEOUT waiting for: $pattern (after ${timeout}s)"
+    return 1
+}
+
 # Install to a playground directory (non-interactive)
 INSTALL_OUTPUT=$(PLAYGROUND=yes AUTO_CONFIRM=yes bash "$N2_DIR/install.sh" 2>&1)
 echo "--- install output ---"
@@ -41,8 +57,10 @@ tmux new-session -d -s "$SESSION" -x 220 -y 50
 # Open a bash login shell using the playground home directory
 tmux send-keys -t "$SESSION" "HOME='$PLAYGROUND_DIR' bash --login" Enter
 
-# Wait for the shell to start and the prompt to render
-sleep 3
+# Wait for the prompt to render (user@host pattern)
+CURRENT_USER=$(whoami)
+CURRENT_HOST=$(hostname -s 2>/dev/null || hostname)
+wait_for "${CURRENT_USER}@${CURRENT_HOST}" 15
 
 # Capture the pane (include scrollback)
 OUTPUT=$(tmux capture-pane -t "$SESSION" -p -S -)
@@ -52,7 +70,6 @@ echo "$OUTPUT"
 echo "--- end of pane ---"
 
 # 1. Username is present in prompt (running as root in Docker, or current user)
-CURRENT_USER=$(whoami)
 if echo "$OUTPUT" | grep -q "$CURRENT_USER"; then
     pass "Username '$CURRENT_USER' appears in prompt output"
 else
@@ -60,7 +77,6 @@ else
 fi
 
 # 2. Hostname is present
-CURRENT_HOST=$(hostname -s 2>/dev/null || hostname)
 if echo "$OUTPUT" | grep -q "$CURRENT_HOST"; then
     pass "Hostname '$CURRENT_HOST' appears in prompt output"
 else
