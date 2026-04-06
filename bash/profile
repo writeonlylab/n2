@@ -1,7 +1,7 @@
-if [ ${BASH_VERSINFO[0]} -lt 4 ]; then
+if [ ${BASH_VERSINFO[0]} -lt 3 ]; then
     echo -
     echo - Your bash version $BASH_VERSION is too low.
-    echo - N2 requires at least 4.x.
+    echo - N2 requires at least 3.2.
     echo -
     return 1
 fi
@@ -23,9 +23,11 @@ __n2_get_m2_root() {
         fi
     done
     if [ -n "${N2_EXTRA_M2_DIRS:-}" ]; then
-        local extra_dir
-        IFS=',' read -ra __n2_extra_dirs <<< "$N2_EXTRA_M2_DIRS"
-        for extra_dir in "${__n2_extra_dirs[@]}"; do
+        local extra_dir saved_ifs
+        saved_ifs="$IFS"
+        IFS=","
+        for extra_dir in $N2_EXTRA_M2_DIRS; do
+            IFS="$saved_ifs"
             [ -d "$extra_dir" ] || continue
             if [ -z "$ret" ]; then
                 ret="$extra_dir"
@@ -33,7 +35,7 @@ __n2_get_m2_root() {
                 ret="$ret:$extra_dir"
             fi
         done
-        unset __n2_extra_dirs
+        IFS="$saved_ifs"
     fi
     echo "$ret"
 }

@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-if [ ${BASH_VERSINFO[0]} -lt 4 ]; then
+if [ ${BASH_VERSINFO[0]} -lt 3 ]; then
     echo "Your bash version ($BASH_VERSION) is too low."
-    echo "Requires at least 4.x."
+    echo "Requires at least 3.2."
     exit 1
 fi
 
@@ -61,12 +61,19 @@ read -r -d '' GIT_CONFIG_SNIP << EOM || true
 # $N2_ENTRANCE_END
 EOM
 
-declare -A SNIPPETS=(
-    ["$BASHRC_PATH"]="$BASHRC_SNIP"
-    ["$BASH_PROFILE_PATH"]="$BASH_PROFILE_SNIP"
-    ["$VIMRC_PATH"]="$VIMRC_SNIP"
-    ["$TMUX_CONF_PATH"]="$TMUX_CONF_SNIP"
-    ["$GIT_CONFIG_PATH"]="$GIT_CONFIG_SNIP"
+SNIPPET_PATHS=(
+    "$BASHRC_PATH"
+    "$BASH_PROFILE_PATH"
+    "$VIMRC_PATH"
+    "$TMUX_CONF_PATH"
+    "$GIT_CONFIG_PATH"
+)
+SNIPPET_VALUES=(
+    "$BASHRC_SNIP"
+    "$BASH_PROFILE_SNIP"
+    "$VIMRC_SNIP"
+    "$TMUX_CONF_SNIP"
+    "$GIT_CONFIG_SNIP"
 )
 
 function indent {
@@ -138,7 +145,8 @@ confirm() {
         echo "  $(fmt 1 <<< A) to continue and auto-confirm all the following installations;"
         echo "  $(fmt 1 <<< N) to skip installing this one;"
         echo "  $(fmt 1 <<< Q) to abort installation:"
-        read -re -p "> " -i "$default_reply"
+        read -re -p "> [$default_reply] "
+        [ -z "$REPLY" ] && REPLY="$default_reply"
         case "$REPLY" in
             Y | y )
                 return 0
@@ -212,10 +220,11 @@ banner() {
 }
 
 main() {
-    local path snippet
+    local i path snippet
     banner welcome
-    for path in ${!SNIPPETS[@]}; do
-        snippet="${SNIPPETS["$path"]}"
+    for i in "${!SNIPPET_PATHS[@]}"; do
+        path="${SNIPPET_PATHS[$i]}"
+        snippet="${SNIPPET_VALUES[$i]}"
         print_diff "$path" "$snippet"
         confirm "$path" || continue
         install "$path" "$snippet"
