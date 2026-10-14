@@ -23,7 +23,8 @@ confirm() {
     fi
 
     while :; do
-        read -re -p "$prompt [Y/n] > " -i "$default"
+        read -re -p "$prompt [Y/n] [$default] "
+        [ -z "$REPLY" ] && REPLY="$default"
         case "$REPLY" in
             Y | y | "") return 0 ;;
             N | n)       return 1 ;;
